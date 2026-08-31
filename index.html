@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Forecasting App</title>
+
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            font-family: Arial, sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 60px auto;
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.4);
+        }
+
+        h2 {
+            text-align: center;
+            color: #38bdf8;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 6px;
+            background-color: #334155;
+            color: white;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+            background-color: #3b82f6;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+
+        #resultBox {
+            display: none;
+            margin-top: 20px;
+            padding: 18px;
+            background-color: #0f172a;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Sales Forecasting App</h2>
+
+    <form id="predictionForm">
+
+        <label>Store ID</label>
+        <input type="number" id="store_id" required>
+
+        <label>Item ID</label>
+        <input type="number" id="item_id" required>
+
+        <label>Select Date</label>
+        <input type="date" id="date" required>
+
+        <button type="submit">Predict Sales</button>
+    </form>
+
+    <div id="resultBox">
+        <h3>Predicted Sales:</h3>
+        <p id="prediction_output"></p>
+    </div>
+</div>
+
+<script>
+document.getElementById("predictionForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const store_id = document.getElementById("store_id").value;
+    const item_id = document.getElementById("item_id").value;
+    const date = document.getElementById("date").value;
+
+    console.log("Sending data:", store_id, item_id, date);
+
+    const response = await fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            store_id: store_id,
+            item_id: item_id,
+            date: date
+        })
+    });
+
+    const data = await response.json();
+    console.log("Response received:", data);
+
+    if (data.error) {
+        document.getElementById("prediction_output").innerText = "Error: " + data.error;
+    } else {
+        document.getElementById("prediction_output").innerText = data.prediction;
+    }
+
+    document.getElementById("resultBox").style.display = "block";
+});
+</script>
+
+</body>
+</html>
